@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: docqa
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/docqa}
+    username: ${SPRING_DATASOURCE_USERNAME:docqa}
+    password: ${SPRING_DATASOURCE_PASSWORD:docqa}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+docqa:
+  gemini:
+    api-key: ${GEMINI_API_KEY:}

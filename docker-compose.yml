@@ -1,0 +1,34 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: docqa-db
+    environment:
+      POSTGRES_DB: docqa
+      POSTGRES_USER: docqa
+      POSTGRES_PASSWORD: docqa
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U docqa -d docqa"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    container_name: docqa-app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/docqa
+      SPRING_DATASOURCE_USERNAME: docqa
+      SPRING_DATASOURCE_PASSWORD: docqa
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:
