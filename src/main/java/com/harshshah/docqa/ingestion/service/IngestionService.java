@@ -4,6 +4,7 @@ import com.harshshah.docqa.ingestion.domain.Document;
 import com.harshshah.docqa.ingestion.domain.DocumentPage;
 import com.harshshah.docqa.ingestion.domain.DocumentPageRepository;
 import com.harshshah.docqa.ingestion.domain.DocumentRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 @Service
+@RequiredArgsConstructor
 public class IngestionService {
 
     private static final int MIN_TOTAL_CHARS = 200;
@@ -23,14 +25,6 @@ public class IngestionService {
     private final PdfTextExtractor extractor;
     private final DocumentRepository documents;
     private final DocumentPageRepository pages;
-
-    public IngestionService(PdfTextExtractor extractor,
-                            DocumentRepository documents,
-                            DocumentPageRepository pages) {
-        this.extractor = extractor;
-        this.documents = documents;
-        this.pages = pages;
-    }
 
     public record IngestResult(Document document, boolean alreadyExisted) {}
 
