@@ -29,4 +29,11 @@ public class DocumentQueryService {
                 .orElseThrow(() -> new NotFoundException(
                         "Page " + pageNumber + " not found for document " + documentId));
     }
+
+    public List<DocumentPage> getPages(UUID documentId) {
+        if (!documents.existsById(documentId)) {
+            throw new NotFoundException("Document " + documentId + " not found");
+        }
+        return pages.findByDocumentIdOrderByPageNumber(documentId);
+    }
 }
