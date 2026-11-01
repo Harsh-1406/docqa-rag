@@ -25,3 +25,7 @@ management:
 docqa:
   gemini:
     api-key: ${GEMINI_API_KEY:}
+  chunking:
+    strategy: recursive
+    size: 2000
+    overlap: 200
