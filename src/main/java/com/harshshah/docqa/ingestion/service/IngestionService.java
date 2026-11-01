@@ -47,15 +47,17 @@ public class IngestionService {
             throw new InvalidDocumentException("Could not read PDF: " + e.getMessage());
         }
 
-        long totalChars = pageTexts.stream().mapToLong(String::length).sum();
+        List<String> cleanedPages = BoilerplateRemover.strip(pageTexts);
+
+        long totalChars = cleanedPages.stream().mapToLong(String::length).sum();
         if (totalChars < MIN_TOTAL_CHARS) {
             throw new InvalidDocumentException(
                     "PDF has almost no extractable text. It may be scanned; OCR is not supported.");
         }
 
-        Document doc = documents.save(new Document(filename, pageTexts.size(), totalChars, hash));
-        List<DocumentPage> entities = IntStream.range(0, pageTexts.size())
-                .mapToObj(i -> new DocumentPage(doc.getId(), i + 1, pageTexts.get(i)))
+        Document doc = documents.save(new Document(filename, cleanedPages.size(), totalChars, hash));
+        List<DocumentPage> entities = IntStream.range(0, cleanedPages.size())
+                .mapToObj(i -> new DocumentPage(doc.getId(), i + 1, cleanedPages.get(i)))
                 .toList();
         pages.saveAll(entities);
 
