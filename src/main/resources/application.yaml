@@ -34,3 +34,9 @@ docqa:
     strategy: recursive
     size: 2000
     overlap: 200
+  generation:
+    model: gemini-3.5-flash-lite
+    temperature: 0.0
+    max-output-tokens: 1024
+    max-requests-per-minute: 10
+    max-tokens-per-minute: 100000

@@ -2,6 +2,7 @@ package com.harshshah.docqa.chunking.domain;
 
 import com.harshshah.docqa.ingestion.domain.DocumentPage;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -68,5 +69,18 @@ public final class DocumentText {
         while (end > start && Character.isWhitespace(text.charAt(end - 1))) end--;
         if (start >= end) return Optional.empty();
         return Optional.of(new Chunk(start, end, pageAt(start), pageAt(end - 1), text.substring(start, end)));
+    }
+
+    /** Splits [start, end) at page boundaries. Each entry is {pageNumber, from, to}. */
+    public List<int[]> pageSegments(int start, int end) {
+        List<int[]> out = new ArrayList<>();
+        int idx = Arrays.binarySearch(pageStarts, start);
+        if (idx < 0) idx = Math.max(0, -idx - 2);
+        for (int i = idx; i < pageStarts.length && pageStarts[i] < end; i++) {
+            int from = Math.max(start, pageStarts[i]);
+            int to = Math.min(end, i + 1 < pageStarts.length ? pageStarts[i + 1] : text.length());
+            if (from < to) out.add(new int[]{pageNumbers[i], from, to});
+        }
+        return out;
     }
 }

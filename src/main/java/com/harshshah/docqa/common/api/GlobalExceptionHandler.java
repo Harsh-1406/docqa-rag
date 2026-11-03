@@ -2,6 +2,7 @@ package com.harshshah.docqa.common.api;
 
 import com.harshshah.docqa.common.EmbeddingException;
 import com.harshshah.docqa.common.InvalidRequestException;
+import com.harshshah.docqa.common.LlmException;
 import com.harshshah.docqa.common.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -30,6 +31,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmbeddingException.class)
     ProblemDetail embedding(EmbeddingException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_GATEWAY, e.getMessage());
+    }
+
+    @ExceptionHandler(LlmException.class)
+    ProblemDetail llm(LlmException e) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_GATEWAY, e.getMessage());
     }
 }
