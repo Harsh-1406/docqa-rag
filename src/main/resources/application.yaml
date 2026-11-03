@@ -25,6 +25,10 @@ management:
 docqa:
   gemini:
     api-key: ${GEMINI_API_KEY:}
+    model: gemini-embedding-001
+    dimensions: 768
+    max-requests-per-minute: 80
+    max-tokens-per-minute: 24000
   chunking:
     strategy: recursive
     size: 2000
