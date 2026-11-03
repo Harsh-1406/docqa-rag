@@ -29,6 +29,7 @@ docqa:
     dimensions: 768
     max-requests-per-minute: 80
     max-tokens-per-minute: 24000
+    max-batch-size: 50
   chunking:
     strategy: recursive
     size: 2000

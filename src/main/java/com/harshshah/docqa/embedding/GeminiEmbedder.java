@@ -92,7 +92,7 @@ public class GeminiEmbedder implements Embedder {
                 .toList());
 
         for (int attempt = 1; ; attempt++) {
-            limiter.acquire(estimatedTokens);
+            limiter.acquire(estimatedTokens, batch.size());
             try {
                 BatchResponse response = http.post()
                         .uri("/models/{model}:batchEmbedContents", props.model())
