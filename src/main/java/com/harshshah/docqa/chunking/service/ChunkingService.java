@@ -36,4 +36,8 @@ public class ChunkingService {
         List<Chunk> chunks = chunker.chunk(text);
         return new ChunkingResult(chunker.name(), chunks, (System.nanoTime() - start) / 1_000_000);
     }
+
+    public String label(ChunkingConfig config) {
+        return factory.create(config).name();
+    }
 }

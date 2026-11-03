@@ -1,5 +1,6 @@
 package com.harshshah.docqa.common.api;
 
+import com.harshshah.docqa.common.EmbeddingException;
 import com.harshshah.docqa.common.InvalidRequestException;
 import com.harshshah.docqa.common.NotFoundException;
 import org.springframework.http.HttpStatus;
@@ -25,5 +26,10 @@ public class GlobalExceptionHandler {
     ProblemDetail typeMismatch(MethodArgumentTypeMismatchException e) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
                 "Invalid value for parameter '" + e.getName() + "'.");
+    }
+
+    @ExceptionHandler(EmbeddingException.class)
+    ProblemDetail embedding(EmbeddingException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_GATEWAY, e.getMessage());
     }
 }
