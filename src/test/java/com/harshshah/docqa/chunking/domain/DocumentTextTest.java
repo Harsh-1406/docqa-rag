@@ -42,4 +42,13 @@ class DocumentTextTest {
     void globalOffsetConvertsPageOffsets() {
         assertThat(doc.globalOffset(2, 1)).isEqualTo(7);
     }
+
+    @Test
+    void splitsRangesAtPageBoundaries() {
+        List<int[]> segs = doc.pageSegments(2, 14);
+
+        assertThat(segs).extracting(s -> s[0]).containsExactly(1, 2, 3);
+        assertThat(segs.get(0)).containsExactly(1, 2, 6);
+        assertThat(segs.get(2)).containsExactly(3, 12, 14);
+    }
 }
