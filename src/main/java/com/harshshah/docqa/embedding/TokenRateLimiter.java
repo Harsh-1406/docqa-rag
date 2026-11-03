@@ -12,7 +12,7 @@ public class TokenRateLimiter {
         void sleep(long millis);
     }
 
-    private record Event(long timeMillis, int tokens) {}
+    private record Event(long timeMillis, int tokens, int requests) {}
 
     private static final long WINDOW_MS = 60_000;
 
@@ -41,15 +41,22 @@ public class TokenRateLimiter {
     }
 
     public synchronized void acquire(int tokens) {
-        int need = Math.min(tokens, maxTokens);
+        acquire(tokens, 1);
+    }
+
+    /** requests = number of texts in the call, because the API counts each text as one request. */
+    public synchronized void acquire(int tokens, int requests) {
+        int needTokens = Math.min(tokens, maxTokens);
+        int needRequests = Math.min(requests, maxRequests);
         while (true) {
             long now = clock.getAsLong();
             while (!window.isEmpty() && now - window.peekFirst().timeMillis() >= WINDOW_MS) {
                 window.pollFirst();
             }
-            int used = window.stream().mapToInt(Event::tokens).sum();
-            if (window.size() < maxRequests && used + need <= maxTokens) {
-                window.addLast(new Event(now, need));
+            int usedTokens = window.stream().mapToInt(Event::tokens).sum();
+            int usedRequests = window.stream().mapToInt(Event::requests).sum();
+            if (usedRequests + needRequests <= maxRequests && usedTokens + needTokens <= maxTokens) {
+                window.addLast(new Event(now, needTokens, needRequests));
                 return;
             }
             long wait = WINDOW_MS - (now - window.peekFirst().timeMillis());

@@ -43,4 +43,12 @@ class TokenRateLimiterTest {
         limiter.acquire(600);  // 1200 > 1000, so it waits
         assertThat(now.get()).isGreaterThanOrEqualTo(60_000);
     }
+
+    @Test
+    void countsEachTextInABatchAsOneRequest() {
+        var limiter = limiter(80, 1_000_000);
+        limiter.acquire(10, 50);
+        limiter.acquire(10, 50);   // 100 texts > 80 per minute, so it waits
+        assertThat(now.get()).isGreaterThanOrEqualTo(60_000);
+    }
 }
