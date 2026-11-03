@@ -35,7 +35,7 @@ public class GeminiChatClient implements LlmClient {
     @JsonIgnoreProperties(ignoreUnknown = true)
     record Candidate(ResponseContent content, String finishReason) {}
     @JsonIgnoreProperties(ignoreUnknown = true)
-    record Usage(int promptTokenCount, int candidatesTokenCount, int thoughtsTokenCount) {}
+    record Usage(Integer promptTokenCount, Integer candidatesTokenCount, Integer thoughtsTokenCount) {}
     @JsonIgnoreProperties(ignoreUnknown = true)
     record GenerateResponse(List<Candidate> candidates, Usage usageMetadata, String modelVersion) {}
 
@@ -107,8 +107,10 @@ public class GeminiChatClient implements LlmClient {
             throw new LlmException("Gemini output was cut off (max-output-tokens too small).");
         }
         Usage u = r.usageMetadata();
-        int in = u == null ? 0 : u.promptTokenCount();
-        int out = u == null ? 0 : u.candidatesTokenCount() + u.thoughtsTokenCount();
+        int in = u == null || u.promptTokenCount() == null ? 0 : u.promptTokenCount();
+        int out = u == null ? 0
+                : (u.candidatesTokenCount() == null ? 0 : u.candidatesTokenCount())
+                  + (u.thoughtsTokenCount() == null ? 0 : u.thoughtsTokenCount());
         return new LlmResponse(text, r.modelVersion() != null ? r.modelVersion() : gen.model(), in, out, millis);
     }
 

@@ -19,4 +19,21 @@ class PromptBuilderTest {
 
         assertThat(prompt).contains("[Page 1]", "alpha page one", "[Page 2]", "beta page two", "What is beta?");
     }
+
+    @Test
+    void labelsExcerptsWithLettersNotNumbers() {
+        DocumentText doc = DocumentText.fromTexts(List.of("alpha page one", "beta page two"));
+        ScoredChunk first = new ScoredChunk(0, 1, 1, 0, 14, "alpha page one", 0.9);
+        ScoredChunk second = new ScoredChunk(1, 2, 2, 16, doc.text().length(), "beta page two", 0.8);
+
+        String prompt = new PromptBuilder().user(doc, List.of(first, second), "Q?");
+
+        assertThat(prompt).contains("=== Excerpt A ===", "=== Excerpt B ===");
+        assertThat(prompt).doesNotContain("Excerpt 1", "Excerpt 2");
+    }
+
+    @Test
+    void systemPromptTellsTheModelWhereCitationPagesComeFrom() {
+        assertThat(new PromptBuilder().system()).contains("[Page N] marker", "Excerpt letters are not page numbers");
+    }
 }
